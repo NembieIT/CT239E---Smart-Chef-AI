@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 import { Recipe } from "../types";
 import { Clock, Flame, ArrowRight } from "lucide-react";
-import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { ImageWithFallback } from "./imgFallback/ImageWithFallback";
 
 interface SuggestedRecipesProps {
   recipes: Recipe[];

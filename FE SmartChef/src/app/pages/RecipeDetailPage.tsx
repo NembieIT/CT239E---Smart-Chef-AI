@@ -8,7 +8,7 @@ import {
   CheckCircle2,
   Activity,
 } from "lucide-react";
-import { ImageWithFallback } from "../components/figma/ImageWithFallback";
+import { ImageWithFallback } from "../components/imgFallback/ImageWithFallback";
 
 export function RecipeDetailPage() {
   const { id } = useParams();

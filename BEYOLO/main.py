@@ -26,7 +26,7 @@ async def detect_ingredients(file: UploadFile = File(...)):
     img = cv2.imdecode(np_img, cv2.IMREAD_COLOR)
     
   
-    results = model(img, conf=0.0002)
+    results = model(img, conf=0.002)
 
     ingredients = set()
     details = []

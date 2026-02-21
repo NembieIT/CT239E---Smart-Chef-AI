@@ -1,5 +1,5 @@
 import { Clock, Sparkles } from "lucide-react";
-import { ImageWithFallback } from "../components/figma/ImageWithFallback";
+import { ImageWithFallback } from "../components/imgFallback/ImageWithFallback";
 
 export function HistoryPage() {
   const history = [
