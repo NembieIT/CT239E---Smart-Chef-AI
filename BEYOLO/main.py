@@ -5,8 +5,11 @@ import cv2
 import numpy as np
 
 app = FastAPI()
+
+# Tải mô hình YOLOv8 của bạn
 model = YOLO("runs/detect/train/weights/best.pt")
 
+# Cấu hình CORS bắt buộc để kết nối với React
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -18,28 +21,31 @@ app.add_middleware(
 async def detect_ingredients(file: UploadFile = File(...)):
     contents = await file.read()
     
+    # Chuyển đổi dữ liệu byte sang định dạng ảnh OpenCV
     np_img = np.frombuffer(contents, np.uint8)
     img = cv2.imdecode(np_img, cv2.IMREAD_COLOR)
     
-    results = model(img, conf=0.002)
+  
+    results = model(img, conf=0.0002)
 
-    print("Number of results:", len(results))
     ingredients = set()
+    details = []
     
     for r in results:
-        for c in r.boxes.cls:
-            class_name = model.names[int(c)]
-            ingredients.add(class_name)
+        if r.boxes:
+            for box in r.boxes:
+                cls_id = int(box.cls[0])
+                conf_val = float(box.conf[0])
+                class_name = model.names[cls_id]
+                
+                ingredients.add(class_name)
+                # Trả về cả tên và độ tin cậy để React hiển thị
+                details.append({
+                    "name": class_name,
+                    "confidence": conf_val * 100 
+                })
     
-    for r in results:
-        if r.boxes is None:
-            print("No boxes")
-            continue
-
-    for cls, conf in zip(r.boxes.cls, r.boxes.conf):
-        class_name = model.names[int(cls)]
-        print(f"{class_name}: {conf.item():.4f}")
-    print("Final ingredients:", list(ingredients))
     return {
-        "ingredients": list(ingredients)
+        "ingredients": list(ingredients),
+        "details": details
     }

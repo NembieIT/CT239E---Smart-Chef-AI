@@ -1,0 +1,12 @@
+# Frontend
+node_modules/
+dist/
+.env
+
+# Backend
+__pycache__/
+*.pyc
+.venv/
+env/
+# Nếu file weight quá nặng (>100MB) thì nên cân nhắc
+# runs/
