@@ -7,7 +7,8 @@ import numpy as np
 app = FastAPI()
 
 # Tải mô hình YOLOv8 của bạn
-model = YOLO("runs/detect/train/weights/best.pt")
+# model = YOLO("runs/detect/train/weights/best.pt")
+model = YOLO("model/best.pt")
 
 # Cấu hình CORS bắt buộc để kết nối với React
 app.add_middleware(
@@ -26,7 +27,7 @@ async def detect_ingredients(file: UploadFile = File(...)):
     img = cv2.imdecode(np_img, cv2.IMREAD_COLOR)
     
   
-    results = model(img, conf=0.002)
+    results = model(img, conf=0.25)
 
     ingredients = set()
     details = []
@@ -49,3 +50,4 @@ async def detect_ingredients(file: UploadFile = File(...)):
         "ingredients": list(ingredients),
         "details": details
     }
+
