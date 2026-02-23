@@ -1,24 +1,21 @@
+import os
+import cv2
+import numpy as np
+import json
+import re
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from ultralytics import YOLO
 from dotenv import load_dotenv
-import cv2
-import numpy as np
-import google.generativeai as genai
-import json
-import re
-import os
+from groq import Groq
 
-app = FastAPI()
 load_dotenv()
-# --- 1. CẤU HÌNH GEMINI (SỬA LỖI 404) ---
-GOOGLE_API_KEY = os.getenv("SERECT_GOOGLE_API")
-genai.configure(api_key=GOOGLE_API_KEY)
+app = FastAPI()
 
-# Sử dụng 'gemini-pro' thay vì flash để tránh lỗi 404 ở một số khu vực
-gemini_model = genai.GenerativeModel('gemini-pro')
+GROQ_API_KEY = os.getenv("SECRET_GROQ_API")
+client = Groq(api_key=GROQ_API_KEY)
+MODEL_ID = "llama-3.3-70b-versatile"
 
-# --- 2. TẢI MÔ HÌNH YOLO ---
 model = YOLO("model/best.pt")
 
 app.add_middleware(
@@ -34,23 +31,28 @@ async def detect_ingredients(file: UploadFile = File(...)):
     np_img = np.frombuffer(contents, np.uint8)
     img = cv2.imdecode(np_img, cv2.IMREAD_COLOR)
     
-    # Nhận diện nguyên liệu (YOLO vẫn đang chạy rất tốt: 73.8ms)
-    results = model(img, conf=0.25)
-    detected = set()
+    # Nhận diện nguyên liệu
+    results = model(img, conf=0.5)
+    detected_map = {}
     for r in results:
         for box in r.boxes:
-            detected.add(model.names[int(box.cls[0])])
-    
-    list_detected = list(detected)
+            cls_id = int(box.cls[0])
+            conf_val = float(box.conf[0])
+            name = model.names[cls_id]
+            if name not in detected_map or conf_val > detected_map[name]:
+                detected_map[name] = conf_val
+    details = [
+        {"name": name, "confidence": round(conf * 100, 2)} 
+        for name, conf in detected_map.items()
+    ]
+    list_detected = list(detected_map.keys())
     suggestions = []
 
     if list_detected:
-        # Prompt ép kiểu dữ liệu chính xác như bạn yêu cầu
         prompt = f"""
         Dựa trên nguyên liệu: {', '.join(list_detected)}.
-        Hãy gợi ý 1 món ăn Việt Nam phù hợp. 
-        Trả về kết quả duy nhất dưới dạng JSON thuần túy theo cấu trúc này:
-        {{
+        Hãy tìm tối thiểu 2, tối đa 20 công thức nấu ăn (tiếng việt) có thật bao gồm các nguyên liệu (tên nguyên liệu dịch sang tiếng việt) trên và trả về kết quả dạng json dựa theo mẫu bên dưới:
+        "{{
             "id": "50",
             "name": "Tên món ăn",
             "image": "https://images.unsplash.com/photo-1512058560366-cd242d4235cd?q=80&w=1080",
@@ -59,40 +61,55 @@ async def detect_ingredients(file: UploadFile = File(...)):
             "instructions": ["Bước 1...", "Bước 2..."],
             "nutrition": {{ "protein": 20, "carbs": 10, "fat": 5 }},
             "servings": 2
-        }}
+        }}"
         Lưu ý: Không viết lời dẫn, chỉ trả về JSON.
         """
         
         try:
-            # Gọi Gemini Pro
-            response = gemini_model.generate_content(prompt)
+            # Gọi Groq API
+            chat_completion = client.chat.completions.create(
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "Bạn là một đầu bếp chuyên gia. Bạn chỉ trả lời bằng định dạng JSON thuần túy. BẮT BUỘC: Kết quả trả về phải là một MẢNG (ARRAY) các đối tượng món ăn. KHÔNG bọc mảng trong bất kỳ object nào khác (như 'recipes' hay 'congthuc')."
+                    },
+                    {
+                        "role": "user",
+                        "content": prompt,
+                    }
+                ],
+                model=MODEL_ID,
+                # Ép kiểu trả về JSON
+                response_format={"type": "json_object"}
+            )
+            # Parse kết quả
+            res_content = chat_completion.choices[0].message.content
+            data = json.loads(res_content)
             
-            # Làm sạch chuỗi trả về (đề phòng Markdown)
-            json_text = response.text
-            if "```json" in json_text:
-                json_text = json_text.split("```json")[1].split("```")[0]
-            elif "```" in json_text:
-                json_text = json_text.split("```")[1].split("```")[0]
-            
-            # Chuyển thành object
-            recipe_obj = json.loads(json_text.strip())
-            suggestions = [recipe_obj] # Bọc trong mảng để React map dễ dàng
-            
+            # Groq thường trả về Object, chúng ta cần lấy mảng công thức
+            # Nếu AI trả về {"recipes": [...]}, ta lấy mảng bên trong
+            if isinstance(data, dict) and "recipes" in data:
+                suggestions = data["recipes"]
+            elif isinstance(data, list):
+                suggestions = data
+            else:
+                suggestions = [data]
         except Exception as e:
-            print(f"Lỗi xử lý Gemini: {e}")
             # Dữ liệu dự phòng nếu AI vẫn lỗi
+            print(f"Lỗi xử lý Groq: {e}")
             suggestions = [{
                 "id": "error",
-                "name": "Gà xào hành tây ớt chuông",
+                "name": "Không thể tải công thức",
                 "image": "https://images.unsplash.com/photo-1512058560366-cd242d4235cd",
-                "cookingTime": 20,
+                "cookingTime": 0,
                 "ingredients": list_detected,
-                "instructions": ["Sơ chế nguyên liệu", "Xào gà chín tái", "Cho rau củ vào đảo đều"],
-                "nutrition": { "protein": 25, "carbs": 5, "fat": 10 },
-                "servings": 2
+                "instructions": ["Lỗi kết nối AI, vui lòng thử lại sau."],
+                "nutrition": { "protein": 0, "carbs": 0, "fat": 0 },
+                "servings": 0
             }]
 
     return {
         "ingredients": list_detected,
-        "suggestions": suggestions
+        "suggestions": suggestions,
+        "details": details
     }

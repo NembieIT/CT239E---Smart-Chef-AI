@@ -1,4 +1,3 @@
-import { recipes } from "../data/recipes";
 import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { AnimatedPage, staggerContainer, fadeInUp } from "../components/AnimatedPage";

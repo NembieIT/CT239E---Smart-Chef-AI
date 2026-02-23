@@ -17,7 +17,6 @@ import {
   fadeInUp,
 } from "../components/AnimatedPage";
 import { DetectedFood } from "../types";
-import { getRecipesByIngredients } from "../data/recipes";
 
 // Bộ từ điển để dịch kết quả từ Model sang tiếng Việt
 const TRANSLATIONS: Record<string, string> = {
@@ -54,19 +53,19 @@ export function HomePage() {
       if (!response.ok) throw new Error("Không thể kết nối Backend");
 
       const data = await response.json();
-
+      console.log(data);
       // Mapping dữ liệu từ Backend sang định dạng của Frontend
-      const mappedDetections: DetectedFood[] = data.details.map(
-        (item: any, index: number) => ({
-          id: index.toString(),
-          // Dùng từ điển để hiển thị tiếng Việt, nếu không có thì giữ nguyên tên gốc
-          name: TRANSLATIONS[item.name] || item.name,
-          confidence: item.confidence,
-        }),
-      );
+      // const mappedDetections: DetectedFood[] = data.details.map(
+      //   (item: any, index: number) => ({
+      //     id: index.toString(),
+      //     // Dùng từ điển để hiển thị tiếng Việt, nếu không có thì giữ nguyên tên gốc
+      //     name: TRANSLATIONS[item.name] || item.name,
+      //     confidence: item.confidence,
+      //   }),
+      // );
 
-      setDetectedFoods(mappedDetections);
-      setShowResults(true);
+      // setDetectedFoods(mappedDetections);
+      // setShowResults(true);
     } catch (error) {
       console.error("AI Processing Error:", error);
       alert("Lỗi: Server AI chưa khởi động hoặc gặp sự cố!");
@@ -293,7 +292,7 @@ export function HomePage() {
                           />
                           <button
                             onClick={() => fileInputRef.current?.click()}
-                            className="flex items-center justify-center gap-2 px-8 py-3 bg-red-700 text-white rounded-full font-medium hover:shadow-lg transition-all"
+                            className="cursor-pointer flex items-center justify-center gap-2 px-8 py-3 bg-red-700 text-white rounded-full font-medium hover:shadow-lg transition-all"
                           >
                             <Upload className="w-5 h-5" /> Tải ảnh lên
                           </button>
@@ -308,7 +307,7 @@ export function HomePage() {
                           />
                           <button
                             onClick={() => cameraInputRef.current?.click()}
-                            className="flex items-center justify-center gap-2 px-8 py-3 bg-white border-2 border-gray-300 text-gray-700 rounded-full font-medium hover:border-red-400 transition-all"
+                            className="cursor-pointer flex items-center justify-center gap-2 px-8 py-3 bg-white border-2 border-gray-300 text-gray-700 rounded-full font-medium hover:border-red-400 transition-all"
                           >
                             <Camera className="w-5 h-5" /> Mở camera
                           </button>

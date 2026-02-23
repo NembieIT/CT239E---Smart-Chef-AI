@@ -1,5 +1,4 @@
 import { useParams, Link } from "react-router";
-import { getRecipeById } from "../data/recipes";
 import {
   Clock,
   Flame,
