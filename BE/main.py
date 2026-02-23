@@ -14,7 +14,8 @@ app = FastAPI()
 
 GROQ_API_KEY = os.getenv("SECRET_GROQ_API")
 client = Groq(api_key=GROQ_API_KEY)
-MODEL_ID = "llama-3.3-70b-versatile"
+# MODEL_ID = "llama-3.3-70b-versatile"
+MODEL_ID = "llama-3.1-8b-instant"
 
 model = YOLO("model/best.pt")
 
@@ -51,11 +52,11 @@ async def detect_ingredients(file: UploadFile = File(...)):
     if list_detected:
         prompt = f"""
         Dựa trên nguyên liệu: {', '.join(list_detected)}.
-        Hãy tìm tối thiểu 2, tối đa 20 công thức nấu ăn (tiếng việt) có thật bao gồm các nguyên liệu (tên nguyên liệu dịch sang tiếng việt) trên và trả về kết quả dạng json dựa theo mẫu bên dưới:
+        Hãy tìm tối thiểu 2, tối đa 20 công thức nấu ăn (tên món ăn là tiếng việt) có thật bao gồm các nguyên liệu (tên nguyên liệu dịch sang tiếng việt) trên và trả về kết quả dạng json dựa theo mẫu bên dưới:
         "{{
             "id": "50",
             "name": "Tên món ăn",
-            "image": "https://images.unsplash.com/photo-1512058560366-cd242d4235cd?q=80&w=1080",
+            "image": "https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_user_personalization&w=740&q=80",
             "cookingTime": 15,
             "ingredients": ["100g thịt...", "1 củ..."],
             "instructions": ["Bước 1...", "Bước 2..."],
@@ -71,7 +72,7 @@ async def detect_ingredients(file: UploadFile = File(...)):
                 messages=[
                     {
                         "role": "system",
-                        "content": "Bạn là một đầu bếp chuyên gia. Bạn chỉ trả lời bằng định dạng JSON thuần túy. BẮT BUỘC: Kết quả trả về phải là một MẢNG (ARRAY) các đối tượng món ăn. KHÔNG bọc mảng trong bất kỳ object nào khác (như 'recipes' hay 'congthuc')."
+                        "content": "Bạn là một đầu bếp chuyên gia. Bạn chỉ trả lời bằng định dạng JSON thuần túy. QUY TẮC BẮT BUỘC: 1. TRẢ VỀ DUY NHẤT MỘT MẢNG JSON (ARRAY). 2. KHÔNG bọc trong các key như 'recipes' hay 'suggestions'. 3. KHÔNG viết lời dẫn, không dùng Markdown (không có ```json). 4. Phải đảm bảo các dấu ngoặc đóng/mở chính xác."
                     },
                     {
                         "role": "user",

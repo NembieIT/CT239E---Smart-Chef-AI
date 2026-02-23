@@ -62,19 +62,19 @@ export function AboutPage() {
   const teamMembers = [
     {
       name: "Phan Mỹ Phú",
-      role: "AI Engineer & Full-stack Developer",
-      description: "Phát triển mô hình AI nhận diện thực phẩm và xây dựng hệ thống backend",
+      role: "AI & BE, FE Developer",
+      description: "Phát triển mô hình AI nhận diện thực phẩm và xây dựng hệ thống frontend, backend",
       avatar: "https://ui-avatars.com/api/?name=Phan+My+Phu&background=f97316&color=fff&size=200&bold=true",
-      email: "phanmyphu@example.com",
-      github: "phanmyphu",
+      email: "phanmyphu399@gmail.com",
+      github: "phanphu399",
     },
     {
       name: "Mai Tiến Dũng",
-      role: "Frontend Developer & UI/UX Designer",
-      description: "Thiết kế giao diện người dùng và phát triển frontend application",
+      role: "AI & BE, FE Developer",
+      description: "Phát triển mô hình AI nhận diện thực phẩm và xây dựng hệ thống frontend, backend",
       avatar: "https://ui-avatars.com/api/?name=Mai+Tien+Dung&background=22c55e&color=fff&size=200&bold=true",
-      email: "maitiendung@example.com",
-      github: "maitiendung",
+      email: "mtdung240205@gmail.com",
+      github: "NembieIT",
     },
   ];
 
@@ -112,9 +112,9 @@ export function AboutPage() {
           >
             <div className="max-w-4xl mx-auto">
               <div className="flex items-center gap-4 mb-6">
-                <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-orange-500 rounded-2xl flex items-center justify-center">
+                {/* <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-orange-500 rounded-2xl flex items-center justify-center">
                   <Sparkles className="w-8 h-8 text-white" />
-                </div>
+                </div> */}
                 <div>
                   <h2 className="text-3xl font-bold text-gray-800">
                     Về Dự Án
@@ -144,7 +144,7 @@ export function AboutPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8 pt-8 border-t border-gray-200">
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-orange-600 mb-2">95%+</div>
+                  <div className="text-3xl font-bold text-orange-600 mb-2">65%+</div>
                   <div className="text-sm text-gray-600">Độ chính xác AI</div>
                 </div>
                 <div className="text-center">
@@ -243,7 +243,7 @@ export function AboutPage() {
           </div>
 
           {/* Features Grid */}
-          <div className="mb-12">
+          {/* <div className="mb-12">
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -284,7 +284,7 @@ export function AboutPage() {
                 );
               })}
             </motion.div>
-          </div>
+          </div> */}
 
           {/* Technology Stack */}
           <motion.div

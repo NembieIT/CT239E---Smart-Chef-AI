@@ -27,7 +27,7 @@ export function SuggestedRecipes({ recipes }: SuggestedRecipesProps) {
           >
             <div className="relative h-48 overflow-hidden">
               <ImageWithFallback
-                src={recipe.image}
+                src="https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_user_personalization&w=740&q=80"
                 alt={recipe.name}
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
               />
@@ -54,8 +54,9 @@ export function SuggestedRecipes({ recipes }: SuggestedRecipesProps) {
               </div>
 
               <Link
-                to={`/recipe/${recipe.id}`}
-                className="flex items-center justify-center gap-2 w-full py-3 bg-gradient-to-r from-green-500 to-orange-500 text-white rounded-2xl font-medium hover:shadow-lg transition-all group-hover:gap-3"
+                to={`/recipe/${recipe.name}`}
+                state={{ recipe }}
+                className="flex items-center justify-center gap-2 w-full py-3 bg-gradient-to-r bg-red-800 text-white rounded-2xl font-medium hover:shadow-lg hover:scale-105 transition-all"
               >
                 Xem chi tiết
                 <ArrowRight className="w-4 h-4" />

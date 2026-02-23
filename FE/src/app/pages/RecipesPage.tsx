@@ -5,6 +5,8 @@ import { Link } from "react-router";
 import { Clock, Flame, ArrowRight } from "lucide-react";
 import { ImageWithFallback } from "../components/imgFallback/ImageWithFallback";
 import { useState } from "react";
+import { Recipe } from "../types";
+import { MOCK_RECIPES } from "../data/mockData";
 
 const ITEMS_PER_PAGE = 6;
 
@@ -12,7 +14,7 @@ export function RecipesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
-  const filteredRecipes = recipes.filter(
+  const filteredRecipes = MOCK_RECIPES.filter(
     (recipe) =>
       recipe.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       recipe.ingredients.some((ing) =>

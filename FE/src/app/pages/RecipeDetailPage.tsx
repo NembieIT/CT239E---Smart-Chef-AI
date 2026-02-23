@@ -1,4 +1,5 @@
-import { useParams, Link } from "react-router";
+import { Link, useLocation } from "react-router";
+import { Recipe } from "../types";
 import {
   Clock,
   Flame,
@@ -12,10 +13,10 @@ import { AnimatedPage, fadeInUp, staggerContainer } from "../components/Animated
 import { ImageWithFallback } from "../components/imgFallback/ImageWithFallback";
 
 export function RecipeDetailPage() {
-  const { id } = useParams();
-  const recipe = id ? getRecipeById(id) : undefined;
+  const location = useLocation();
+  const recipeFromState = location.state?.recipe as Recipe | undefined;
 
-  if (!recipe) {
+  if (!recipeFromState) {
     return (
       <AnimatedPage>
         <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center">
@@ -63,8 +64,8 @@ export function RecipeDetailPage() {
             {/* Hero Image */}
             <div className="relative h-96">
               <ImageWithFallback
-                src={recipe.image}
-                alt={recipe.name}
+                src="https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_user_personalization&w=740&q=80"
+                alt={recipeFromState.name}
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
@@ -75,7 +76,7 @@ export function RecipeDetailPage() {
                   transition={{ duration: 0.5, delay: 0.3 }}
                   className="text-4xl md:text-5xl font-bold text-white mb-4"
                 >
-                  {recipe.name}
+                  {recipeFromState.name}
                 </motion.h1>
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -85,18 +86,18 @@ export function RecipeDetailPage() {
                 >
                   <div className="flex items-center gap-2 bg-white/20 backdrop-blur-md px-4 py-2 rounded-full">
                     <Flame className="w-5 h-5 text-orange-400" />
-                    <span className="font-semibold">{recipe.calories} kcal</span>
+                    <span className="font-semibold">{recipeFromState.calories} kcal</span>
                   </div>
                   <div className="flex items-center gap-2 bg-white/20 backdrop-blur-md px-4 py-2 rounded-full">
                     <Clock className="w-5 h-5 text-green-400" />
                     <span className="font-semibold">
-                      {recipe.cookingTime} phút
+                      {recipeFromState.cookingTime} phút
                     </span>
                   </div>
                   <div className="flex items-center gap-2 bg-white/20 backdrop-blur-md px-4 py-2 rounded-full">
                     <Users className="w-5 h-5 text-blue-400" />
                     <span className="font-semibold">
-                      {recipe.servings} khẩu phần
+                      {recipeFromState.servings} khẩu phần
                     </span>
                   </div>
                 </motion.div>
@@ -129,7 +130,7 @@ export function RecipeDetailPage() {
                       className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 text-center"
                     >
                       <p className="text-3xl font-bold text-blue-600 mb-1">
-                        {recipe.nutrition.protein}g
+                        {recipeFromState.nutrition.protein}g
                       </p>
                       <p className="text-sm text-gray-600">Protein</p>
                     </motion.div>
@@ -140,7 +141,7 @@ export function RecipeDetailPage() {
                       className="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-2xl p-6 text-center"
                     >
                       <p className="text-3xl font-bold text-yellow-600 mb-1">
-                        {recipe.nutrition.carbs}g
+                        {recipeFromState.nutrition.carbs}g
                       </p>
                       <p className="text-sm text-gray-600">Carbs</p>
                     </motion.div>
@@ -151,14 +152,14 @@ export function RecipeDetailPage() {
                       className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-2xl p-6 text-center"
                     >
                       <p className="text-3xl font-bold text-orange-600 mb-1">
-                        {recipe.nutrition.fat}g
+                        {recipeFromState.nutrition.fat}g
                       </p>
                       <p className="text-sm text-gray-600">Chất béo</p>
                     </motion.div>
                   </div>
                 </motion.div>
 
-                {/* Ingredients */}
+                {/* Nguyên liệu */}
                 <motion.div
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -170,7 +171,7 @@ export function RecipeDetailPage() {
                   </h2>
                   <div className="bg-gradient-to-br from-green-50 to-orange-50 rounded-2xl p-6">
                     <ul className="space-y-3">
-                      {recipe.ingredients.map((ingredient, index) => (
+                      {recipeFromState.ingredients.map((ingredient, index) => (
                         <motion.li
                           key={index}
                           initial={{ opacity: 0, x: -10 }}
@@ -202,7 +203,7 @@ export function RecipeDetailPage() {
                     animate="animate"
                     className="space-y-4"
                   >
-                    {recipe.instructions.map((instruction, index) => (
+                    {recipeFromState.instructions.map((instruction, index) => (
                       <motion.div
                         key={index}
                         variants={fadeInUp}

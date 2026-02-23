@@ -1,19 +1,6 @@
 import { CheckCircle2, Percent } from "lucide-react";
 import { DetectedFood } from "../types";
-
-// Bảng tra cứu Tiếng Việt cho các nguyên liệu
-const TRANSLATIONS: Record<string, string> = {
-  apple: "Trái Táo",
-  shrimp: "Tôm tươi",
-  squid: "Mực ống",
-  onion: "Hành tây",
-  egg: "Trứng gà",
-  tomato: "Cà chua",
-  pineapple: "Trái Dứa",
-  orange: "Trái Cam",
-  berry: "Trái Nho/Dâu",
-  "bell pepper": "Ớt chuông",
-};
+import { ingredientsTRANSLATIONS } from "../data/translation";
 
 // 1. Cập nhật Interface để nhận thêm imageUrl
 interface DetectionResultsProps {
@@ -38,7 +25,7 @@ export function DetectionResults({
             />
             <div className="absolute inset-0 bg-black/20" />
             <div className="absolute bottom-4 left-4">
-              <span className="px-3 py-1 bg-white/90 backdrop-blur-md rounded-full text-xs font-bold uppercase tracking-wider text-slate-800">
+              <span className="px-3 py-1 bg-white/90 backdrop-blur-md rounded-full text-xs font-bold uppercase tracking-wider text-slate-800 p-2">
                 Ảnh đã phân tích
               </span>
             </div>
@@ -51,7 +38,7 @@ export function DetectionResults({
                 <CheckCircle2 className="w-6 h-6 text-green-600" />
               </div>
               <div>
-                <h2 className="text-xl font-black text-slate-800 uppercase tracking-tight">
+                <h2 className="text-xl font-black text-slate-800 uppercase tracking-tight p-2">
                   Nguyên liệu tìm thấy
                 </h2>
                 <p className="text-sm text-slate-400 font-medium">
@@ -68,7 +55,7 @@ export function DetectionResults({
                 >
                   <span className="font-bold text-slate-700">
                     {/* Dịch tên sang Tiếng Việt */}
-                    {TRANSLATIONS[food.name.toLowerCase()] || food.name}
+                    {ingredientsTRANSLATIONS[food.name.toLowerCase()] || food.name}
                   </span>
 
                   <div className="flex items-center gap-1.5 px-3 py-1 bg-white rounded-full shadow-sm border border-slate-100">

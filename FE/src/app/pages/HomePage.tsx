@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Upload,
   Camera,
@@ -16,24 +16,45 @@ import {
   staggerContainer,
   fadeInUp,
 } from "../components/AnimatedPage";
-import { DetectedFood } from "../types";
-
-// Bộ từ điển để dịch kết quả từ Model sang tiếng Việt
-const TRANSLATIONS: Record<string, string> = {
-  Eggplant: "Cà tím",
-  Carrot: "Cà rốt",
-  Patato: "Khoai tây", // Map đúng từ lỗi chính tả trong model của bạn
-  Onion: "Hành tây",
-};
+import { DetectedFood, Recipe } from "../types";
+import { ingredientsTRANSLATIONS } from "../data/translation";
 
 export function HomePage() {
-  const [showUploadSection, setShowUploadSection] = useState(false);
+  const [showUploadSection, setShowUploadSection] = useState<boolean>(() => {
+    const savedStatus = sessionStorage.getItem("showUploadSection");
+    return savedStatus === "true";
+  });
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [detectedFoods, setDetectedFoods] = useState<DetectedFood[]>([]);
+  const [suggestedRecipes, setSuggestedRecipes] = useState<Recipe[]>([]);
   const [showResults, setShowResults] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const savedData = sessionStorage.getItem("lastScan");
+    if (savedData) {
+      const data = JSON.parse(savedData);
+      setDetectedFoods(mapDetails(data));
+      setSuggestedRecipes(data.suggestions);
+      setShowResults(true);
+    }
+    sessionStorage.setItem("showUploadSection", showUploadSection.toString());
+    setUploadedImage(sessionStorage.getItem('imgLoaded'));
+  }, []);
+
+  // Hàm mapping dữ liệu details khi có kết quả
+  const mapDetails = (data) => {
+    const mappedDetections: DetectedFood[] = data.details.map(
+      (item: any, index: number) => ({
+        id: index.toString(),
+        name: ingredientsTRANSLATIONS[item.name] || item.name,
+        confidence: item.confidence,
+      }),
+    );
+    return mappedDetections;
+  }
 
   // Hàm xử lý gửi ảnh lên Backend FastAPI
   const processImageWithAI = async (file: File) => {
@@ -44,7 +65,6 @@ export function HomePage() {
     formData.append("file", file);
 
     try {
-      // Gọi đến địa chỉ Backend bạn đã chạy (localhost:8000)
       const response = await fetch("http://localhost:8000/detect-ingredients", {
         method: "POST",
         body: formData,
@@ -53,19 +73,17 @@ export function HomePage() {
       if (!response.ok) throw new Error("Không thể kết nối Backend");
 
       const data = await response.json();
-      console.log(data);
       // Mapping dữ liệu từ Backend sang định dạng của Frontend
-      // const mappedDetections: DetectedFood[] = data.details.map(
-      //   (item: any, index: number) => ({
-      //     id: index.toString(),
-      //     // Dùng từ điển để hiển thị tiếng Việt, nếu không có thì giữ nguyên tên gốc
-      //     name: TRANSLATIONS[item.name] || item.name,
-      //     confidence: item.confidence,
-      //   }),
-      // );
-
-      // setDetectedFoods(mappedDetections);
-      // setShowResults(true);
+      const mappedDetections = mapDetails(data);
+      const mappedRecipes: Recipe[] = data.suggestions.map((recipe: any) => ({
+        ...recipe,
+        // Nếu AI chưa trả về calories, mặc định hoặc tính toán nhẹ
+        calories: recipe.calories || (recipe.nutrition.protein * 4 || 0 + recipe.nutrition.carbs * 4 || 0 + recipe.nutrition.fat * 9 || 0) || "Chưa có"
+      }));
+      sessionStorage.setItem("lastScan", JSON.stringify(data));
+      setDetectedFoods(mappedDetections);
+      setSuggestedRecipes(mappedRecipes);
+      setShowResults(true);
     } catch (error) {
       console.error("AI Processing Error:", error);
       alert("Lỗi: Server AI chưa khởi động hoặc gặp sự cố!");
@@ -78,8 +96,10 @@ export function HomePage() {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
+      const objectUrl = URL.createObjectURL(file);
       reader.onloadend = () => {
         setUploadedImage(reader.result as string);
+        sessionStorage.setItem('imgLoaded', objectUrl);
         processImageWithAI(file); // Gửi file thực tế đi xử lý
       };
       reader.readAsDataURL(file);
@@ -91,8 +111,10 @@ export function HomePage() {
     const file = e.dataTransfer.files[0];
     if (file && file.type.startsWith("image/")) {
       const reader = new FileReader();
+      const objectUrl = URL.createObjectURL(file);
       reader.onloadend = () => {
         setUploadedImage(reader.result as string);
+        sessionStorage.setItem('imgLoaded', objectUrl);
         processImageWithAI(file);
       };
       reader.readAsDataURL(file);
@@ -102,10 +124,6 @@ export function HomePage() {
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
   };
-
-  const suggestedRecipes = showResults
-    ? getRecipesByIngredients(detectedFoods.map((f) => f.name))
-    : [];
 
   const features = [
     {
@@ -176,7 +194,10 @@ export function HomePage() {
 
                     <div className="flex flex-col sm:flex-row gap-4 mb-16">
                       <button
-                        onClick={() => setShowUploadSection(true)}
+                        onClick={() => {
+                          setShowUploadSection(true);
+                          sessionStorage.setItem("showUploadSection", "true");
+                        }}
                         className="cursor-pointer group flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-700 to-gray-500 text-white rounded-2xl font-semibold text-lg shadow-xl hover:shadow-white/30 transition-all"
                       >
                         <span>Bắt đầu ngay</span>
@@ -263,7 +284,7 @@ export function HomePage() {
                             setShowResults(false);
                             setDetectedFoods([]);
                           }}
-                          className="px-6 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-sm font-medium transition-colors"
+                          className="cursor-pointer px-6 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-sm font-medium transition-colors"
                         >
                           Tải ảnh khác
                         </button>
