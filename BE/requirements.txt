@@ -1,0 +1,13 @@
+# fastapi
+# uvicorn
+# ultralytics
+# opencv-python
+# numpy
+# python-multipart
+fastapi
+uvicorn
+ultralytics
+opencv-python
+numpy
+google-generativeai
+python-multipart
