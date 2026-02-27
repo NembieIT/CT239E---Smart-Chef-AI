@@ -114,7 +114,7 @@ export function RecipeDetailPage() {
                   className="md:col-span-3 mb-8"
                 >
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-orange-500 rounded-2xl flex items-center justify-center">
+                    <div className="w-12 h-12 bg-gradient-to-br bg-red-600 rounded-2xl flex items-center justify-center">
                       <Activity className="w-6 h-6 text-white" />
                     </div>
                     <h2 className="text-2xl font-bold text-gray-800">
@@ -210,7 +210,7 @@ export function RecipeDetailPage() {
                         custom={index}
                         className="flex gap-4 bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-md transition-shadow"
                       >
-                        <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-green-500 to-orange-500 rounded-full flex items-center justify-center text-white font-bold">
+                        <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br bg-green-500 rounded-full flex items-center justify-center text-white font-bold">
                           {index + 1}
                         </div>
                         <p className="text-gray-700 flex-1 pt-1.5">

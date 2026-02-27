@@ -52,7 +52,7 @@ async def detect_ingredients(file: UploadFile = File(...)):
     if list_detected:
         prompt = f"""
         Dựa trên nguyên liệu: {', '.join(list_detected)}.
-        Hãy tìm tối thiểu 2, tối đa 20 công thức nấu ăn (tên món ăn là tiếng việt) có thật bao gồm các nguyên liệu (tên nguyên liệu dịch sang tiếng việt) trên và trả về kết quả dạng json dựa theo mẫu bên dưới:
+        Hãy tìm tối thiểu 2, tối đa 20 công thức nấu ăn (tên món ăn là tiếng việt) có thật bắt buộc bao gồm các nguyên liệu (tên nguyên liệu dịch sang tiếng việt) trên và trả về kết quả dạng json dựa theo mẫu bên dưới:
         "{{
             "id": "50",
             "name": "Tên món ăn",
@@ -72,7 +72,7 @@ async def detect_ingredients(file: UploadFile = File(...)):
                 messages=[
                     {
                         "role": "system",
-                        "content": "Bạn là một đầu bếp chuyên gia. Bạn chỉ trả lời bằng định dạng JSON thuần túy. QUY TẮC BẮT BUỘC: 1. TRẢ VỀ DUY NHẤT MỘT MẢNG JSON (ARRAY). 2. KHÔNG bọc trong các key như 'recipes' hay 'suggestions'. 3. KHÔNG viết lời dẫn, không dùng Markdown (không có ```json). 4. Phải đảm bảo các dấu ngoặc đóng/mở chính xác."
+                        "content": "Bạn là một đầu bếp chuyên gia. Bạn chỉ trả lời bằng định dạng JSON thuần túy. QUY TẮC BẮT BUỘC: 1. TRẢ VỀ DUY NHẤT MỘT MẢNG JSON (ARRAY). 2. KHÔNG bọc trong các key như 'recipes' hay 'suggestions'. 3. KHÔNG viết lời dẫn, không dùng Markdown (không có ```json). 4. Phải đảm bảo các dấu ngoặc đóng/mở chính xác. 5. Các món ăn bắt buộc là món với thành phần chính là nguyên liệu tôi gửi lên."
                     },
                     {
                         "role": "user",

@@ -13,7 +13,7 @@ export const ingredientsTRANSLATIONS: Record<string, string> = {
     Cauliflower: "Bông cải trắng",
     Celery: "Cần tây",
     Chicken: "Thịt gà",
-    Cucumber: "Dưa chuột",
+    Cucumber: "Dưa leo",
     Curry: "Cà ri",
     Dill: "Thì là",
     Egg: "Trứng",
