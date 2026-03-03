@@ -1,12 +1,11 @@
+import { recipes } from "../data/recipes";
 import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { AnimatedPage, staggerContainer, fadeInUp } from "../components/AnimatedPage";
 import { Link } from "react-router";
 import { Clock, Flame, ArrowRight } from "lucide-react";
-import { ImageWithFallback } from "../components/imgFallback/ImageWithFallback";
+import { ImageWithFallback } from "../components/imgFallBack/ImageWithFallback";
 import { useState } from "react";
-import { Recipe } from "../types";
-import { MOCK_RECIPES } from "../data/mockData";
 
 const ITEMS_PER_PAGE = 6;
 
@@ -14,7 +13,7 @@ export function RecipesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
-  const filteredRecipes = MOCK_RECIPES.filter(
+  const filteredRecipes = recipes.filter(
     (recipe) =>
       recipe.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       recipe.ingredients.some((ing) =>
@@ -22,7 +21,6 @@ export function RecipesPage() {
       )
   );
 
-  // Pagination logic
   const totalPages = Math.ceil(filteredRecipes.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
@@ -35,7 +33,6 @@ export function RecipesPage() {
     }
   };
 
-  // Reset to page 1 when search changes
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
     setCurrentPage(1);
@@ -43,18 +40,24 @@ export function RecipesPage() {
 
   return (
     <AnimatedPage>
-      <div className="min-h-[calc(100vh-4rem)]">
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-8">
+      <div className="p-8">
+        {/* Animated background */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl top-20 right-20 animate-pulse" />
+          <div className="absolute w-96 h-96 bg-purple-500/5 rounded-full blur-3xl bottom-20 left-20 animate-pulse" style={{ animationDelay: '1s' }} />
+        </div>
+
+        <section className="relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="text-center mb-8"
+            className="mb-8"
           >
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r bg-green-600 bg-clip-text text-transparent uppercase p-2">
+            <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
               Tất cả công thức
             </h1>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="text-gray-400">
               Khám phá bộ sưu tập các công thức nấu ăn ngon và lành mạnh
             </p>
           </motion.div>
@@ -64,20 +67,20 @@ export function RecipesPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="max-w-2xl mx-auto mb-12"
+            className="mb-8"
           >
             <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-cyan-400" />
               <input
                 type="text"
                 placeholder="Tìm kiếm công thức hoặc nguyên liệu..."
                 value={searchQuery}
                 onChange={(e) => handleSearchChange(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 bg-white rounded-2xl shadow-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                className="w-full pl-12 pr-4 py-4 glass rounded-2xl border border-cyan-500/20 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all text-gray-300 placeholder:text-gray-600"
               />
             </div>
             {searchQuery && (
-              <p className="text-sm text-gray-500 mt-2">
+              <p className="text-sm text-gray-400 mt-2">
                 Tìm thấy {filteredRecipes.length} công thức
               </p>
             )}
@@ -85,7 +88,6 @@ export function RecipesPage() {
 
           {currentRecipes.length > 0 ? (
             <>
-              {/* Recipes Grid with AnimatePresence for smooth transitions */}
               <AnimatePresence mode="wait">
                 <motion.div
                   key={currentPage}
@@ -107,7 +109,7 @@ export function RecipesPage() {
                         custom={index}
                         whileHover={{ scale: 1.02, y: -5 }}
                         transition={{ duration: 0.3 }}
-                        className="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 group"
+                        className="glass rounded-3xl overflow-hidden glow-hover group"
                       >
                         <div className="relative h-48 overflow-hidden">
                           <ImageWithFallback
@@ -115,34 +117,36 @@ export function RecipesPage() {
                             alt={recipe.name}
                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                           />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
                         </div>
 
                         <div className="p-6">
-                          <h3 className="text-xl font-bold text-gray-800 mb-3 line-clamp-2">
+                          <h3 className="text-xl font-bold text-purple-100 mb-3 line-clamp-2">
                             {recipe.name}
                           </h3>
 
                           <div className="flex items-center gap-4 mb-4">
-                            <div className="flex items-center gap-1 text-sm text-gray-600">
-                              <Flame className="w-4 h-4 text-orange-500" />
-                              <span className="font-semibold">{recipe.calories}</span>
+                            <div className="flex items-center gap-1 text-sm text-gray-400">
+                              <Flame className="w-4 h-4 text-pink-400" />
+                              <span className="font-semibold text-purple-200">{recipe.calories}</span>
                               <span>kcal</span>
                             </div>
 
-                            <div className="flex items-center gap-1 text-sm text-gray-600">
-                              <Clock className="w-4 h-4 text-green-500" />
-                              <span className="font-semibold">{recipe.cookingTime}</span>
+                            <div className="flex items-center gap-1 text-sm text-gray-400">
+                              <Clock className="w-4 h-4 text-purple-400" />
+                              <span className="font-semibold text-purple-200">{recipe.cookingTime}</span>
                               <span>phút</span>
                             </div>
                           </div>
 
                           <Link
                             to={`/recipe/${recipe.id}`}
-                            className="flex items-center justify-center gap-2 w-full py-3 bg-gradient-to-r from-green-500 to-orange-500 text-white rounded-2xl font-medium hover:shadow-lg transition-all group-hover:gap-3"
+                            className="relative flex items-center justify-center gap-2 w-full py-3 rounded-2xl font-medium overflow-hidden group/btn"
                           >
-                            Xem công thức
-                            <ArrowRight className="w-4 h-4" />
+                            <div className="absolute inset-0 bg-gradient-to-r bg-blue-600" />
+                            <div className="absolute inset-0 bg-gradient-to-r bg-blue-600 blur-md opacity-0 group-hover/btn:opacity-70 transition-opacity" />
+                            <span className="relative z-10 text-white">Xem công thức</span>
+                            <ArrowRight className="w-4 h-4 text-white relative z-10 group-hover/btn:translate-x-1 transition-transform" />
                           </Link>
                         </div>
                       </motion.div>
@@ -159,45 +163,48 @@ export function RecipesPage() {
                   transition={{ duration: 0.5, delay: 0.3 }}
                   className="flex items-center justify-center gap-2"
                 >
-                  {/* Previous Button */}
-                  <button
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className={`p-3 rounded-xl transition-all ${currentPage === 1
-                      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                      : "bg-white text-gray-700 hover:bg-orange-50 hover:text-orange-600 shadow-md hover:shadow-lg"
+                    className={`cursor-pointer p-3 rounded-xl transition-all ${currentPage === 1
+                      ? "glass opacity-50 cursor-not-allowed"
+                      : "glass glass-hover text-purple-200"
                       }`}
                   >
                     <ChevronLeft className="w-5 h-5" />
-                  </button>
+                  </motion.button>
 
-                  {/* Page Numbers */}
                   <div className="flex items-center gap-2">
                     {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                      <button
+                      <motion.button
                         key={page}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                         onClick={() => handlePageChange(page)}
-                        className={`w-12 h-12 rounded-xl font-semibold transition-all ${currentPage === page
-                          ? "bg-gradient-to-r from-green-500 to-orange-500 text-white shadow-lg scale-110"
-                          : "bg-white text-gray-700 hover:bg-orange-50 hover:text-orange-600 shadow-md hover:shadow-lg"
+                        className={`cursor-pointer w-12 h-12 rounded-xl font-semibold transition-all ${currentPage === page
+                          ? "bg-gradient-to-r bg-red-800 text-white shadow-lg glow"
+                          : "glass text-purple-200 glass-hover"
                           }`}
                       >
                         {page}
-                      </button>
+                      </motion.button>
                     ))}
                   </div>
 
-                  {/* Next Button */}
-                  <button
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className={`p-3 rounded-xl transition-all ${currentPage === totalPages
-                      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                      : "bg-white text-gray-700 hover:bg-orange-50 hover:text-orange-600 shadow-md hover:shadow-lg"
+                    className={`cursor-pointer p-3 rounded-xl transition-all ${currentPage === totalPages
+                      ? "glass opacity-50 cursor-not-allowed"
+                      : "glass glass-hover text-purple-200"
                       }`}
                   >
                     <ChevronRight className="w-5 h-5" />
-                  </button>
+                  </motion.button>
                 </motion.div>
               )}
             </>
@@ -208,8 +215,8 @@ export function RecipesPage() {
               transition={{ duration: 0.4 }}
               className="text-center py-12"
             >
-              <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md mx-auto">
-                <p className="text-gray-600">
+              <div className="glass rounded-2xl p-8 max-w-md mx-auto">
+                <p className="text-gray-400">
                   Không tìm thấy công thức nào với từ khóa "{searchQuery}"
                 </p>
               </div>

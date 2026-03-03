@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router";
-import { Recipe } from "../types";
+import { getRecipeById } from "../data/recipes";
 import {
   Clock,
   Flame,
@@ -7,26 +7,30 @@ import {
   ArrowLeft,
   CheckCircle2,
   Activity,
+  Sparkles,
 } from "lucide-react";
-import { motion } from "motion/react";
+import { motion } from "motion/react"; // hoặc "framer-motion"
 import { AnimatedPage, fadeInUp, staggerContainer } from "../components/AnimatedPage";
-import { ImageWithFallback } from "../components/imgFallback/ImageWithFallback";
+import { ImageWithFallback } from "../components/imgFallBack/ImageWithFallback";
 
 export function RecipeDetailPage() {
   const location = useLocation();
-  const recipeFromState = location.state?.recipe as Recipe | undefined;
 
-  if (!recipeFromState) {
+  //lấy công thức AI từ location.state (nếu đi từ HomePage sang)
+  const recipe = location.state?.recipe;
+
+  if (!recipe) {
     return (
       <AnimatedPage>
         <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">
+          <div className="glass rounded-2xl p-8 text-center max-w-md">
+            <Sparkles className="w-16 h-16 text-purple-400 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-purple-100 mb-2">
               Không tìm thấy công thức
             </h2>
             <Link
               to="/"
-              className="text-orange-500 hover:text-orange-600 font-medium"
+              className="text-purple-400 hover:text-purple-300 font-medium transition-colors"
             >
               Quay lại trang chủ
             </Link>
@@ -36,22 +40,33 @@ export function RecipeDetailPage() {
     );
   }
 
+  // Đảm bảo lấy đúng mảng nguyên liệu (xử lý cả 2 trường hợp tên biến)
+  const ingredientsToDisplay = recipe.ingredientsList || recipe.ingredients || [];
+  const instructionsToDisplay = recipe.instructions || [];
+
   return (
     <AnimatedPage>
-      <div className="min-h-[calc(100vh-4rem)]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12">
+      <div className="min-h-[calc(100vh-4rem)] relative">
+        {/* Animated background */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute w-96 h-96 bg-purple-500/5 rounded-full blur-3xl top-20 right-20 animate-pulse" />
+          <div className="absolute w-96 h-96 bg-pink-500/5 rounded-full blur-3xl bottom-20 left-20 animate-pulse" style={{ animationDelay: '1s' }} />
+        </div>
+
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12">
           {/* Back Button */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.4 }}
           >
+            {/* Nên quay lại trang chủ thay vì /recipes vì đây là công thức scan AI */}
             <Link
               to="/"
-              className="inline-flex items-center gap-2 text-gray-600 hover:text-orange-500 mb-6 transition-colors"
+              className="inline-flex items-center gap-2 text-gray-400 hover:text-purple-400 mb-6 transition-colors group"
             >
-              <ArrowLeft className="w-5 h-5" />
-              <span className="font-medium">Quay lại trang chủ</span>
+              <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+              <span className="font-medium">Quay lại Trang chủ</span>
             </Link>
           </motion.div>
 
@@ -59,16 +74,16 @@ export function RecipeDetailPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="bg-white rounded-3xl shadow-2xl overflow-hidden"
+            className="glass rounded-3xl overflow-hidden border border-purple-500/20"
           >
             {/* Hero Image */}
             <div className="relative h-96">
               <ImageWithFallback
-                src="https://img.freepik.com/free-photo/top-view-table-full-food_23-2149209253.jpg?semt=ais_user_personalization&w=740&q=80"
-                alt={recipeFromState.name}
+                src={recipe.image}
+                alt={recipe.name}
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-8">
                 <motion.h1
                   initial={{ opacity: 0, y: 20 }}
@@ -76,7 +91,7 @@ export function RecipeDetailPage() {
                   transition={{ duration: 0.5, delay: 0.3 }}
                   className="text-4xl md:text-5xl font-bold text-white mb-4"
                 >
-                  {recipeFromState.name}
+                  {recipe.name}
                 </motion.h1>
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -84,20 +99,20 @@ export function RecipeDetailPage() {
                   transition={{ duration: 0.5, delay: 0.4 }}
                   className="flex flex-wrap items-center gap-4 text-white"
                 >
-                  <div className="flex items-center gap-2 bg-white/20 backdrop-blur-md px-4 py-2 rounded-full">
-                    <Flame className="w-5 h-5 text-orange-400" />
-                    <span className="font-semibold">{recipeFromState.calories} kcal</span>
+                  <div className="flex items-center gap-2 glass px-4 py-2 rounded-full border border-purple-500/30">
+                    <Flame className="w-5 h-5 text-pink-400" />
+                    <span className="font-semibold">{recipe.calories || 0} kcal</span>
                   </div>
-                  <div className="flex items-center gap-2 bg-white/20 backdrop-blur-md px-4 py-2 rounded-full">
-                    <Clock className="w-5 h-5 text-green-400" />
+                  <div className="flex items-center gap-2 glass px-4 py-2 rounded-full border border-purple-500/30">
+                    <Clock className="w-5 h-5 text-purple-400" />
                     <span className="font-semibold">
-                      {recipeFromState.cookingTime} phút
+                      {recipe.cookTime || recipe.cookingTime || 15} phút
                     </span>
                   </div>
-                  <div className="flex items-center gap-2 bg-white/20 backdrop-blur-md px-4 py-2 rounded-full">
+                  <div className="flex items-center gap-2 glass px-4 py-2 rounded-full border border-purple-500/30">
                     <Users className="w-5 h-5 text-blue-400" />
                     <span className="font-semibold">
-                      {recipeFromState.servings} khẩu phần
+                      {recipe.servings || 1} khẩu phần
                     </span>
                   </div>
                 </motion.div>
@@ -114,72 +129,63 @@ export function RecipeDetailPage() {
                   className="md:col-span-3 mb-8"
                 >
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="w-12 h-12 bg-gradient-to-br bg-red-600 rounded-2xl flex items-center justify-center">
-                      <Activity className="w-6 h-6 text-white" />
-                    </div>
-                    <h2 className="text-2xl font-bold text-gray-800">
+                    <h2 className="text-2xl font-bold text-white uppercase">
                       Thông tin dinh dưỡng
                     </h2>
                   </div>
 
                   <div className="grid grid-cols-3 gap-4">
                     <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.4, delay: 0.6 }}
-                      className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 text-center"
+                      whileHover={{ scale: 1.05, y: -5 }}
+                      className="glass rounded-2xl p-6 text-center border border-blue-500/30 glow-hover"
                     >
-                      <p className="text-3xl font-bold text-blue-600 mb-1">
-                        {recipeFromState.nutrition.protein}g
+                      <p className="text-3xl font-bold text-blue-400 mb-1">
+                        {recipe.protein || recipe.nutrition?.protein || 0}g
                       </p>
-                      <p className="text-sm text-gray-600">Protein</p>
+                      <p className="text-sm text-gray-400">Protein</p>
                     </motion.div>
                     <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.4, delay: 0.7 }}
-                      className="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-2xl p-6 text-center"
+                      whileHover={{ scale: 1.05, y: -5 }}
+                      className="glass rounded-2xl p-6 text-center border border-yellow-500/30 glow-hover"
                     >
-                      <p className="text-3xl font-bold text-yellow-600 mb-1">
-                        {recipeFromState.nutrition.carbs}g
+                      <p className="text-3xl font-bold text-yellow-400 mb-1">
+                        {recipe.carbs || recipe.nutrition?.carbs || 0}g
                       </p>
-                      <p className="text-sm text-gray-600">Carbs</p>
+                      <p className="text-sm text-gray-400">Carbs</p>
                     </motion.div>
                     <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.4, delay: 0.8 }}
-                      className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-2xl p-6 text-center"
+                      whileHover={{ scale: 1.05, y: -5 }}
+                      className="glass rounded-2xl p-6 text-center border border-orange-500/30 glow-hover"
                     >
-                      <p className="text-3xl font-bold text-orange-600 mb-1">
-                        {recipeFromState.nutrition.fat}g
+                      <p className="text-3xl font-bold text-orange-400 mb-1">
+                        {recipe.fat || recipe.nutrition?.fat || 0}g
                       </p>
-                      <p className="text-sm text-gray-600">Chất béo</p>
+                      <p className="text-sm text-gray-400">Chất béo</p>
                     </motion.div>
                   </div>
                 </motion.div>
 
-                {/* Nguyên liệu */}
+                {/* Ingredients */}
                 <motion.div
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.5, delay: 0.6 }}
                   className="md:col-span-1"
                 >
-                  <h2 className="text-2xl font-bold text-gray-800 mb-6">
+                  <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
                     Nguyên liệu
                   </h2>
-                  <div className="bg-gradient-to-br from-green-50 to-orange-50 rounded-2xl p-6">
+                  <div className="glass rounded-2xl p-6 border border-purple-500/20">
                     <ul className="space-y-3">
-                      {recipeFromState.ingredients.map((ingredient, index) => (
+                      {ingredientsToDisplay.map((ingredient: string, index: number) => (
                         <motion.li
                           key={index}
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ duration: 0.3, delay: 0.7 + index * 0.05 }}
-                          className="flex items-start gap-3 text-gray-700"
+                          className="flex items-start gap-3 text-gray-300"
                         >
-                          <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                          <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
                           <span>{ingredient}</span>
                         </motion.li>
                       ))}
@@ -194,7 +200,7 @@ export function RecipeDetailPage() {
                   transition={{ duration: 0.5, delay: 0.7 }}
                   className="md:col-span-2"
                 >
-                  <h2 className="text-2xl font-bold text-gray-800 mb-6">
+                  <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
                     Hướng dẫn nấu ăn
                   </h2>
                   <motion.div
@@ -203,17 +209,18 @@ export function RecipeDetailPage() {
                     animate="animate"
                     className="space-y-4"
                   >
-                    {recipeFromState.instructions.map((instruction, index) => (
+                    {instructionsToDisplay.map((instruction: string, index: number) => (
                       <motion.div
                         key={index}
                         variants={fadeInUp}
                         custom={index}
-                        className="flex gap-4 bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-md transition-shadow"
+                        whileHover={{ x: 5 }}
+                        className="flex gap-4 glass border border-purple-500/20 rounded-2xl p-5 hover:border-purple-500/40 transition-all"
                       >
-                        <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br bg-green-500 rounded-full flex items-center justify-center text-white font-bold">
+                        <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br bg-blue-700 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
                           {index + 1}
                         </div>
-                        <p className="text-gray-700 flex-1 pt-1.5">
+                        <p className="text-gray-300 flex-1 pt-1.5">
                           {instruction}
                         </p>
                       </motion.div>

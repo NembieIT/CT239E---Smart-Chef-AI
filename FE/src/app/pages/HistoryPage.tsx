@@ -1,7 +1,7 @@
 import { Clock, Sparkles, X, Flame, Users, CheckCircle2 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { AnimatedPage, staggerContainer, fadeInUp } from "../components/AnimatedPage";
-import { ImageWithFallback } from "../components/imgFallback/ImageWithFallback";
+import { ImageWithFallback } from "../components/imgFallBack/ImageWithFallback";
 import { useState } from "react";
 
 interface HistoryItem {
@@ -22,7 +22,6 @@ interface HistoryItem {
 export function HistoryPage() {
   const [selectedItem, setSelectedItem] = useState<HistoryItem | null>(null);
 
-  // Mock history data with full recipe details
   const history: HistoryItem[] = [
     {
       id: "1",
@@ -119,18 +118,24 @@ export function HistoryPage() {
 
   return (
     <AnimatedPage>
-      <div className="min-h-[calc(100vh-4rem)]">
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-8">
+      <div className="p-8">
+        {/* Animated background */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl top-20 left-20 animate-pulse" />
+          <div className="absolute w-96 h-96 bg-purple-500/5 rounded-full blur-3xl bottom-20 right-20 animate-pulse" style={{ animationDelay: '1s' }} />
+        </div>
+
+        <section className="relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="text-center mb-12"
+            className="mb-12"
           >
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-green-600 to-orange-600 bg-clip-text text-transparent uppercase p-2">
+            <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
               Lịch sử quét
             </h1>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="text-gray-400">
               Xem lại các lần quét thực phẩm và nguyên liệu đã nhận diện trước đây
             </p>
           </motion.div>
@@ -150,7 +155,7 @@ export function HistoryPage() {
                   whileHover={{ scale: 1.02, y: -5 }}
                   transition={{ duration: 0.3 }}
                   onClick={() => setSelectedItem(item)}
-                  className="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-all cursor-pointer group"
+                  className="glass rounded-3xl overflow-hidden glow-hover cursor-pointer group"
                 >
                   <div className="relative h-48 overflow-hidden">
                     <ImageWithFallback
@@ -158,11 +163,11 @@ export function HistoryPage() {
                       alt="Thực phẩm đã quét"
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                    <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                    <div className="absolute top-4 right-4 glass px-3 py-1 rounded-full">
                       <div className="flex items-center gap-1 text-sm">
-                        <Sparkles className="w-4 h-4 text-orange-500" />
-                        <span className="font-semibold text-gray-700">
+                        <Sparkles className="w-4 h-4 text-purple-400" />
+                        <span className="font-semibold text-purple-200">
                           {item.detectedItems} món
                         </span>
                       </div>
@@ -170,7 +175,7 @@ export function HistoryPage() {
                   </div>
 
                   <div className="p-6">
-                    <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
+                    <div className="flex items-center gap-2 text-sm text-gray-400 mb-3">
                       <Clock className="w-4 h-4" />
                       {item.timestamp}
                     </div>
@@ -179,7 +184,7 @@ export function HistoryPage() {
                       {item.topIngredients.map((ingredient, idx) => (
                         <span
                           key={idx}
-                          className="px-3 py-1 bg-gradient-to-br from-green-50 to-orange-50 text-gray-700 rounded-full text-sm font-medium"
+                          className="px-3 py-1 glass text-purple-200 rounded-full text-sm font-medium border border-purple-500/20"
                         >
                           {ingredient}
                         </span>
@@ -196,12 +201,12 @@ export function HistoryPage() {
               transition={{ duration: 0.4 }}
               className="text-center py-12"
             >
-              <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md mx-auto">
-                <Sparkles className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">
+              <div className="glass rounded-2xl p-8 max-w-md mx-auto">
+                <Sparkles className="w-12 h-12 text-purple-400 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-purple-100 mb-2">
                   Chưa có lịch sử
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-gray-400">
                   Bắt đầu tải lên hình ảnh thực phẩm để xem lịch sử quét của bạn
                 </p>
               </div>
@@ -220,7 +225,7 @@ export function HistoryPage() {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
                 onClick={() => setSelectedItem(null)}
-                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
+                className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50"
               />
 
               {/* Modal Content */}
@@ -231,24 +236,26 @@ export function HistoryPage() {
                   exit={{ opacity: 0, scale: 0.9, y: 20 }}
                   transition={{ duration: 0.3, ease: "easeOut" }}
                   onClick={(e) => e.stopPropagation()}
-                  className="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto pointer-events-auto"
+                  className="glass rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto pointer-events-auto border border-purple-500/30"
                 >
                   {/* Modal Header */}
-                  <div className="sticky top-0 bg-white border-b border-gray-200 px-8 py-6 flex items-center justify-between rounded-t-3xl z-10">
+                  <div className="sticky top-0 glass border-b border-purple-500/20 px-8 py-6 flex items-center justify-between rounded-t-3xl z-10">
                     <div>
-                      <h2 className="text-2xl font-bold text-gray-800">
+                      <h2 className="text-2xl font-bold text-purple-100">
                         {selectedItem.recipe.name}
                       </h2>
-                      <p className="text-sm text-gray-500 mt-1">
+                      <p className="text-sm text-gray-400 mt-1">
                         {selectedItem.timestamp}
                       </p>
                     </div>
-                    <button
+                    <motion.button
+                      whileHover={{ scale: 1.1, rotate: 90 }}
+                      whileTap={{ scale: 0.9 }}
                       onClick={() => setSelectedItem(null)}
-                      className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                      className="p-2 glass hover:bg-purple-500/20 rounded-full transition-colors"
                     >
-                      <X className="w-6 h-6 text-gray-600" />
-                    </button>
+                      <X className="w-6 h-6 text-gray-400" />
+                    </motion.button>
                   </div>
 
                   {/* Modal Body */}
@@ -260,30 +267,30 @@ export function HistoryPage() {
                         alt={selectedItem.recipe.name}
                         className="w-full h-full object-cover"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                     </div>
 
                     {/* Stats */}
                     <div className="grid grid-cols-2 gap-4 mb-8">
-                      <div className="flex items-center gap-3 p-4 bg-gradient-to-br from-orange-50 to-red-50 rounded-2xl">
-                        <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center">
+                      <div className="flex items-center gap-3 p-4 glass rounded-2xl border border-purple-500/20">
+                        <div className="w-12 h-12 bg-gradient-to-br from-pink-500 to-red-500 rounded-xl flex items-center justify-center">
                           <Flame className="w-6 h-6 text-white" />
                         </div>
                         <div>
-                          <p className="text-sm text-gray-600">Calories</p>
-                          <p className="text-xl font-bold text-gray-800">
+                          <p className="text-sm text-gray-400">Calories</p>
+                          <p className="text-xl font-bold text-purple-100">
                             {selectedItem.recipe.calories} kcal
                           </p>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-3 p-4 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl">
-                        <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center">
+                      <div className="flex items-center gap-3 p-4 glass rounded-2xl border border-purple-500/20">
+                        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center">
                           <Users className="w-6 h-6 text-white" />
                         </div>
                         <div>
-                          <p className="text-sm text-gray-600">Khẩu phần</p>
-                          <p className="text-xl font-bold text-gray-800">
+                          <p className="text-sm text-gray-400">Khẩu phần</p>
+                          <p className="text-xl font-bold text-purple-100">
                             {selectedItem.recipe.servings} người
                           </p>
                         </div>
@@ -292,19 +299,23 @@ export function HistoryPage() {
 
                     {/* Ingredients */}
                     <div className="mb-8">
-                      <h3 className="text-xl font-bold text-gray-800 mb-4">
+                      <h3 className="text-xl font-bold text-purple-100 mb-4 flex items-center gap-2">
+                        <Sparkles className="w-5 h-5 text-purple-400" />
                         Nguyên liệu
                       </h3>
-                      <div className="bg-gradient-to-br from-green-50 to-orange-50 rounded-2xl p-6">
+                      <div className="glass rounded-2xl p-6 border border-purple-500/20">
                         <ul className="space-y-3">
                           {selectedItem.recipe.ingredients.map((ingredient, index) => (
-                            <li
+                            <motion.li
                               key={index}
-                              className="flex items-start gap-3 text-gray-700"
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: index * 0.05 }}
+                              className="flex items-start gap-3 text-gray-300"
                             >
-                              <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                              <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
                               <span>{ingredient}</span>
-                            </li>
+                            </motion.li>
                           ))}
                         </ul>
                       </div>
@@ -312,22 +323,26 @@ export function HistoryPage() {
 
                     {/* Instructions */}
                     <div>
-                      <h3 className="text-xl font-bold text-gray-800 mb-4">
+                      <h3 className="text-xl font-bold text-purple-100 mb-4 flex items-center gap-2">
+                        <CheckCircle2 className="w-5 h-5 text-purple-400" />
                         Hướng dẫn thực hiện
                       </h3>
                       <div className="space-y-4">
                         {selectedItem.recipe.instructions.map((instruction, index) => (
-                          <div
+                          <motion.div
                             key={index}
-                            className="flex gap-4 bg-white border border-gray-200 rounded-2xl p-5"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.05 }}
+                            className="flex gap-4 glass border border-purple-500/20 rounded-2xl p-5"
                           >
-                            <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-green-500 to-orange-500 rounded-full flex items-center justify-center text-white font-bold">
+                            <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
                               {index + 1}
                             </div>
-                            <p className="text-gray-700 flex-1 pt-1.5">
+                            <p className="text-gray-300 flex-1 pt-1.5">
                               {instruction}
                             </p>
-                          </div>
+                          </motion.div>
                         ))}
                       </div>
                     </div>
