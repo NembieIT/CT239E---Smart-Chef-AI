@@ -1,9 +1,3 @@
-# fastapi
-# uvicorn
-# ultralytics
-# opencv-python
-# numpy
-# python-multipart
 fastapi
 uvicorn
 ultralytics
@@ -12,3 +6,7 @@ numpy
 groq
 python-multipart
 python-dotenv
+motor
+passlib
+bcrypt==3.2.2
+python-jose
