@@ -8,5 +8,6 @@ __pycache__/
 *.pyc
 .venv/
 env/
+BE/model/best.pt
 # Nếu file weight quá nặng (>100MB) thì nên cân nhắc
 # runs/
