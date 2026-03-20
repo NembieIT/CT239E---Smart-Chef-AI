@@ -191,4 +191,13 @@
   .glow-cyan {
     box-shadow: 0 0 20px var(--glow-color);
   }
+  .glass-premium {
+    @apply bg-[#0f172a]/40 backdrop-blur-2xl border border-white/5 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)];
+  }
+
+  .text-gradient-ai {
+   @apply text-transparent bg-clip-text bg-[length:200%_auto];
+    background-image: linear-gradient(to right, #00F0FF, #7C3AED, #00F0FF);
+    animation: gradient 4s ease infinite;
+  }
 }
