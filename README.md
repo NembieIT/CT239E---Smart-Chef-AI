@@ -23,7 +23,7 @@ Hệ thống được thiết kế theo mô hình Client-Server. Frontend sẽ x
 ## Project Structure
 ```text
 SmartChefAI/
-├── FE/                     # Nền tảng Frontend (React/Vite)
+├── FE/                     
 │   ├── guidelines/
 │   │   └── Guidelines.md
 │   ├── src/
@@ -39,9 +39,9 @@ SmartChefAI/
 │   ├── postcss.config.mjs
 │   ├── vite.config.ts
 │   └── .gitignore
-└── BE/                     # Nền tảng Backend (Python)
+└── BE/                     
     ├── model/
-    │   └── best.pt         # Trọng số mô hình AI đã train
+    │   └── best.pt         # Mô hình AI đã train
     ├── routers/            # Các API endpoints
     │   ├── __pycache__/
     │   ├── auth.py         # Xử lý xác thực người dùng
@@ -57,12 +57,13 @@ SmartChefAI/
 ## Installation
 1. Khởi chạy Backend (Python)
 Mở terminal và di chuyển vào thư mục BE:
-Yêu cầu máy đã cài đặt python cũng như python extension trong vscode. 
-py -m pip install -r requirements.txt 
-python -m uvicorn main:app --reload
+Yêu cầu máy đã cài đặt python cũng như python extension trong vscode.
+- cd BE
+- py -m pip install -r requirements.txt 
+- python -m uvicorn main:app --reload
 
 2. Khởi chạy Frontend (React/Vite)
 Mở một terminal khác và di chuyển vào thư mục FE:
-cd FE
-npm install
-npm run dev
+- cd FE
+- npm install
+- npm run dev
